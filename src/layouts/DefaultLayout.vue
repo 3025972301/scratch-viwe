@@ -34,11 +34,11 @@
 
     <v-navigation-drawer v-model="drawer" temporary>
       <v-list nav>
-        <v-list-item to="/" prepend-icon="mdi-home" title="首页"></v-list-item>
-        <v-list-item to="/gallery" prepend-icon="mdi-view-grid" title="作品展厅"></v-list-item>
-        <v-list-item to="/students" prepend-icon="mdi-account-group" title="学生风采"></v-list-item>
+        <v-list-item to="/" prepend-icon="mdi-home" title="首页" @click="drawer = false"></v-list-item>
+        <v-list-item to="/gallery" prepend-icon="mdi-view-grid" title="作品展厅" @click="drawer = false"></v-list-item>
+        <v-list-item to="/students" prepend-icon="mdi-account-group" title="学生风采" @click="drawer = false"></v-list-item>
         <v-divider class="my-2"></v-divider>
-        <v-list-item to="/admin" prepend-icon="mdi-cog" title="管理后台"></v-list-item>
+        <v-list-item to="/admin" prepend-icon="mdi-cog" title="管理后台" @click="drawer = false"></v-list-item>
       </v-list>
     </v-navigation-drawer>
 

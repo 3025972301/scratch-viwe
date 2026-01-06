@@ -20,11 +20,18 @@ declare module 'vue-router/auto-routes' {
   export interface RouteNamedMap {
     '/': RouteRecordInfo<'/', '/', Record<never, never>, Record<never, never>>,
     '/admin/': RouteRecordInfo<'/admin/', '/admin', Record<never, never>, Record<never, never>>,
+    '/admin/backup': RouteRecordInfo<'/admin/backup', '/admin/backup', Record<never, never>, Record<never, never>>,
     '/admin/projects': RouteRecordInfo<'/admin/projects', '/admin/projects', Record<never, never>, Record<never, never>>,
+    '/admin/review': RouteRecordInfo<'/admin/review', '/admin/review', Record<never, never>, Record<never, never>>,
     '/admin/students': RouteRecordInfo<'/admin/students', '/admin/students', Record<never, never>, Record<never, never>>,
     '/admin/upload': RouteRecordInfo<'/admin/upload', '/admin/upload', Record<never, never>, Record<never, never>>,
+    '/admin/users': RouteRecordInfo<'/admin/users', '/admin/users', Record<never, never>, Record<never, never>>,
     '/gallery': RouteRecordInfo<'/gallery', '/gallery', Record<never, never>, Record<never, never>>,
     '/login': RouteRecordInfo<'/login', '/login', Record<never, never>, Record<never, never>>,
+    '/my/': RouteRecordInfo<'/my/', '/my', Record<never, never>, Record<never, never>>,
+    '/my/profile': RouteRecordInfo<'/my/profile', '/my/profile', Record<never, never>, Record<never, never>>,
+    '/my/projects': RouteRecordInfo<'/my/projects', '/my/projects', Record<never, never>, Record<never, never>>,
+    '/my/upload': RouteRecordInfo<'/my/upload', '/my/upload', Record<never, never>, Record<never, never>>,
     '/project/[id]': RouteRecordInfo<'/project/[id]', '/project/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     '/students': RouteRecordInfo<'/students', '/students', Record<never, never>, Record<never, never>>,
   }
@@ -48,8 +55,16 @@ declare module 'vue-router/auto-routes' {
       routes: '/admin/'
       views: never
     }
+    'src/pages/admin/backup.vue': {
+      routes: '/admin/backup'
+      views: never
+    }
     'src/pages/admin/projects.vue': {
       routes: '/admin/projects'
+      views: never
+    }
+    'src/pages/admin/review.vue': {
+      routes: '/admin/review'
       views: never
     }
     'src/pages/admin/students.vue': {
@@ -60,12 +75,32 @@ declare module 'vue-router/auto-routes' {
       routes: '/admin/upload'
       views: never
     }
+    'src/pages/admin/users.vue': {
+      routes: '/admin/users'
+      views: never
+    }
     'src/pages/gallery.vue': {
       routes: '/gallery'
       views: never
     }
     'src/pages/login.vue': {
       routes: '/login'
+      views: never
+    }
+    'src/pages/my/index.vue': {
+      routes: '/my/'
+      views: never
+    }
+    'src/pages/my/profile.vue': {
+      routes: '/my/profile'
+      views: never
+    }
+    'src/pages/my/projects.vue': {
+      routes: '/my/projects'
+      views: never
+    }
+    'src/pages/my/upload.vue': {
+      routes: '/my/upload'
       views: never
     }
     'src/pages/project/[id].vue': {

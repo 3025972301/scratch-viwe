@@ -6,7 +6,12 @@
         学生风采
       </h1>
 
-      <v-row v-if="store.students.length > 0">
+      <!-- 加载状态 -->
+      <div v-if="store.loading" class="d-flex justify-center align-center py-12">
+        <v-progress-circular indeterminate color="primary" size="64"></v-progress-circular>
+      </div>
+
+      <v-row v-else-if="store.students.length > 0">
         <v-col
           v-for="student in store.students"
           :key="student.id"
@@ -56,7 +61,7 @@
       </v-row>
 
       <v-empty-state
-        v-else
+        v-else-if="!store.loading"
         icon="mdi-account-group"
         title="暂无学生信息"
         text="管理员还未添加学生信息"
@@ -101,12 +106,14 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { useAppStore } from '@/stores/app'
 import { getFileUrl } from '@/utils/api'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import ProjectCard from '@/components/ProjectCard.vue'
 
+const route = useRoute()
 const store = useAppStore()
 
 const projectsDialog = ref(false)
@@ -126,8 +133,25 @@ function showStudentProjects(student) {
   projectsDialog.value = true
 }
 
-onMounted(() => {
-  store.loadData()
+// 处理URL参数，自动打开指定学生的作品
+function handleUrlParams() {
+  const studentId = route.query.id
+  if (studentId) {
+    const student = store.getStudentById(studentId)
+    if (student) {
+      showStudentProjects(student)
+    }
+  }
+}
+
+onMounted(async () => {
+  await store.loadData()
+  handleUrlParams()
+})
+
+// 监听路由参数变化
+watch(() => route.query.id, () => {
+  handleUrlParams()
 })
 </script>
 

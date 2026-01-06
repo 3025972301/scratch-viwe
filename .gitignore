@@ -20,3 +20,26 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+/.claude/
+
+# Database files (local development only)
+*.db
+data.db
+
+# Auto-generated type definitions
+components.d.ts
+typed-router.d.ts
+
+# Wrangler local state
+.wrangler/
+
+# Archive files
+*.7z
+*.zip
+*.tar.gz
+
+# Accidental Windows NUL files
+nul
+
+# Server node_modules (separate from root)
+server/node_modules/

@@ -1,10 +1,7 @@
 <template>
   <DefaultLayout>
     <!-- Hero Section -->
-    <v-parallax
-      src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=1920"
-      :height="isMobile ? 350 : 500"
-    >
+    <div class="hero-section" :style="{ minHeight: isMobile ? '350px' : '500px' }">
       <div class="d-flex flex-column fill-height justify-center align-center text-white px-4">
         <h1 class="hero-title text-center" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
           Scratch 创意作品展
@@ -22,7 +19,7 @@
           浏览全部作品
         </v-btn>
       </div>
-    </v-parallax>
+    </div>
 
     <!-- Stats Section -->
     <v-container class="py-12">
@@ -52,7 +49,13 @@
     </v-container>
 
     <!-- Featured Projects -->
-    <v-container class="py-8" v-if="featuredProjects.length > 0">
+    <v-container class="py-8" v-if="store.loading">
+      <div class="d-flex justify-center align-center py-12">
+        <v-progress-circular indeterminate color="primary" size="64"></v-progress-circular>
+      </div>
+    </v-container>
+
+    <v-container class="py-8" v-else-if="featuredProjects.length > 0">
       <h2 class="text-h4 font-weight-bold mb-6 text-center">
         <v-icon color="warning" class="mr-2">mdi-star</v-icon>
         精选作品
@@ -82,7 +85,7 @@
     </v-container>
 
     <!-- Empty State -->
-    <v-container class="py-12" v-else>
+    <v-container class="py-12" v-else-if="!store.loading">
       <v-empty-state
         icon="mdi-folder-open"
         title="暂无作品"
@@ -149,6 +152,25 @@ const featuredProjects = computed(() => {
 </script>
 
 <style scoped>
+.hero-section {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3Cpath d='M6 5V0H5v5H0v1h5v94h1V6h94V5H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
 .hero-title {
   font-size: 3rem;
   font-weight: bold;

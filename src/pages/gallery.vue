@@ -42,10 +42,15 @@
         </v-col>
       </v-row>
 
+      <!-- 加载状态 -->
+      <div v-if="store.loading" class="d-flex justify-center align-center py-12">
+        <v-progress-circular indeterminate color="primary" size="64"></v-progress-circular>
+      </div>
+
       <!-- 作品列表 -->
-      <v-row v-if="filteredProjects.length > 0">
+      <v-row v-else-if="paginatedProjects.length > 0">
         <v-col
-          v-for="project in filteredProjects"
+          v-for="project in paginatedProjects"
           :key="project.id"
           cols="12"
           sm="6"
@@ -56,9 +61,24 @@
         </v-col>
       </v-row>
 
+      <!-- 分页控件 -->
+      <div v-if="totalPages > 1" class="d-flex justify-center mt-6">
+        <v-pagination
+          v-model="currentPage"
+          :length="totalPages"
+          :total-visible="5"
+          rounded="circle"
+        ></v-pagination>
+      </div>
+
+      <!-- 结果统计 -->
+      <div v-if="filteredProjects.length > 0" class="text-center mt-4 text-grey">
+        共 {{ filteredProjects.length }} 个作品，当前显示第 {{ (currentPage - 1) * pageSize + 1 }}-{{ Math.min(currentPage * pageSize, filteredProjects.length) }} 个
+      </div>
+
       <!-- 空状态 -->
       <v-empty-state
-        v-else
+        v-else-if="!store.loading"
         icon="mdi-folder-search"
         title="没有找到作品"
         text="尝试修改搜索条件或清除筛选"
@@ -85,6 +105,8 @@ const search = ref('')
 const debouncedSearch = ref('')
 const sortBy = ref('newest')
 const filterStudent = ref(null)
+const currentPage = ref(1)
+const pageSize = 12 // 每页显示数量
 
 // 搜索防抖
 let searchTimer = null
@@ -92,7 +114,13 @@ watch(search, (newValue) => {
   if (searchTimer) clearTimeout(searchTimer)
   searchTimer = setTimeout(() => {
     debouncedSearch.value = newValue
+    currentPage.value = 1 // 搜索时重置到第一页
   }, 300)
+})
+
+// 筛选条件变化时重置页码
+watch([sortBy, filterStudent], () => {
+  currentPage.value = 1
 })
 
 const sortOptions = [
@@ -145,11 +173,24 @@ const filteredProjects = computed(() => {
   return result
 })
 
+// 计算总页数
+const totalPages = computed(() => {
+  return Math.ceil(filteredProjects.value.length / pageSize)
+})
+
+// 当前页的项目
+const paginatedProjects = computed(() => {
+  const start = (currentPage.value - 1) * pageSize
+  const end = start + pageSize
+  return filteredProjects.value.slice(start, end)
+})
+
 function clearFilters() {
   search.value = ''
   debouncedSearch.value = ''
   filterStudent.value = null
   sortBy.value = 'newest'
+  currentPage.value = 1
 }
 
 onMounted(() => {

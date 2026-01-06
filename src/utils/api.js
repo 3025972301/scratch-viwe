@@ -1,5 +1,6 @@
 // API 配置
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002/api'
+// 生产环境使用相对路径（前后端同域），开发环境使用本地服务器
+const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:3002/api')
 
 // 获取 token
 function getToken() {
@@ -42,7 +43,32 @@ export const api = {
         method: 'POST',
         body: JSON.stringify({ username, password })
       }),
-    verify: () => request('/auth/verify')
+    verify: () => request('/auth/verify'),
+    changePassword: (oldPassword, newPassword) =>
+      request('/auth/change-password', {
+        method: 'POST',
+        body: JSON.stringify({ oldPassword, newPassword })
+      })
+  },
+
+  // 用户管理
+  users: {
+    getAll: () => request('/users'),
+    getById: (id) => request(`/users/${id}`),
+    create: (data) =>
+      request('/users', {
+        method: 'POST',
+        body: JSON.stringify(data)
+      }),
+    update: (id, data) =>
+      request(`/users/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data)
+      }),
+    delete: (id) =>
+      request(`/users/${id}`, {
+        method: 'DELETE'
+      })
   },
 
   // 学生
@@ -68,6 +94,9 @@ export const api = {
   // 项目
   projects: {
     getAll: () => request('/projects'),
+    getAllAdmin: () => request('/projects/all'),
+    getPending: () => request('/projects/pending'),
+    getMy: () => request('/projects/my'),
     getById: (id) => request(`/projects/${id}`),
     getByStudent: (studentId) => request(`/projects/student/${studentId}`),
     create: (data) =>
@@ -83,6 +112,11 @@ export const api = {
     delete: (id) =>
       request(`/projects/${id}`, {
         method: 'DELETE'
+      }),
+    review: (id, action, reason = '') =>
+      request(`/projects/${id}/review`, {
+        method: 'POST',
+        body: JSON.stringify({ action, reason })
       }),
     incrementViews: (id) =>
       request(`/projects/${id}/view`, {
@@ -153,6 +187,26 @@ export const api = {
 
       return response.json()
     }
+  },
+
+  // 备份恢复
+  backup: {
+    // 导出数据
+    export: () => request('/backup/export'),
+
+    // 导入数据（JSON 格式）
+    import: (data, clearExisting = false) =>
+      request('/backup/import', {
+        method: 'POST',
+        body: JSON.stringify({ data, clearExisting })
+      }),
+
+    // 从 SQLite 导入
+    importSqlite: (students, projects, clearExisting = false) =>
+      request('/backup/import-sqlite', {
+        method: 'POST',
+        body: JSON.stringify({ students, projects, clearExisting })
+      })
   }
 }
 
@@ -160,7 +214,11 @@ export const api = {
 export function getFileUrl(path) {
   if (!path) return ''
   if (path.startsWith('http') || path.startsWith('data:')) return path
-  // 移除 /api 后缀，因为静态文件直接由服务器根路径提供
+  // 生产环境：前后端同域，直接使用相对路径
+  // 开发环境：需要拼接服务器地址
+  if (import.meta.env.PROD) {
+    return path
+  }
   const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3002/api'
   const baseUrl = apiUrl.replace(/\/api$/, '')
   return `${baseUrl}${path}`

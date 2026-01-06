@@ -10,6 +10,18 @@ export const useAuthStore = defineStore('auth', () => {
   // 检查是否已登录
   const isAuthenticated = computed(() => !!token.value)
 
+  // 检查是否是管理员
+  const isAdmin = computed(() => user.value?.role === 'admin')
+
+  // 检查是否是学生
+  const isStudent = computed(() => user.value?.role === 'student')
+
+  // 获取用户角色
+  const userRole = computed(() => user.value?.role || null)
+
+  // 获取关联的学生ID
+  const studentId = computed(() => user.value?.studentId || null)
+
   // 登录
   async function login(username, password) {
     loading.value = true
@@ -20,7 +32,7 @@ export const useAuthStore = defineStore('auth', () => {
         token.value = result.token
         user.value = result.user
         localStorage.setItem('authToken', result.token)
-        return { success: true }
+        return { success: true, user: result.user }
       }
 
       return { success: false, message: '登录失败' }
@@ -36,6 +48,16 @@ export const useAuthStore = defineStore('auth', () => {
     token.value = null
     user.value = null
     localStorage.removeItem('authToken')
+  }
+
+  // 修改密码
+  async function changePassword(oldPassword, newPassword) {
+    try {
+      const result = await api.auth.changePassword(oldPassword, newPassword)
+      return result
+    } catch (error) {
+      return { success: false, message: error.message || '修改密码失败' }
+    }
   }
 
   // 初始化 - 验证现有 token
@@ -64,8 +86,13 @@ export const useAuthStore = defineStore('auth', () => {
     user,
     loading,
     isAuthenticated,
+    isAdmin,
+    isStudent,
+    userRole,
+    studentId,
     login,
     logout,
+    changePassword,
     init,
     getCurrentUser
   }

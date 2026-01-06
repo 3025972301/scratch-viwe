@@ -53,6 +53,24 @@
         ></v-list-item>
 
         <v-list-item
+          to="/admin/review"
+          prepend-icon="mdi-clipboard-check"
+          title="作品审核"
+          value="review"
+        >
+          <template v-slot:append v-if="pendingCount > 0">
+            <v-badge :content="pendingCount" color="error" inline></v-badge>
+          </template>
+        </v-list-item>
+
+        <v-list-item
+          to="/admin/users"
+          prepend-icon="mdi-account-cog"
+          title="用户管理"
+          value="users"
+        ></v-list-item>
+
+        <v-list-item
           to="/admin/students"
           prepend-icon="mdi-account-group"
           title="学生管理"
@@ -71,6 +89,13 @@
           prepend-icon="mdi-upload"
           title="上传作品"
           value="upload"
+        ></v-list-item>
+
+        <v-list-item
+          to="/admin/backup"
+          prepend-icon="mdi-backup-restore"
+          title="备份恢复"
+          value="backup"
         ></v-list-item>
       </v-list>
 
@@ -98,20 +123,35 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { api } from '@/utils/api'
 
 const router = useRouter()
 const authStore = useAuthStore()
 
 const drawer = ref(true)
 const rail = ref(false)
+const pendingCount = ref(0)
 
 const currentUser = computed(() => authStore.getCurrentUser())
+
+async function loadPendingCount() {
+  try {
+    const pending = await api.projects.getPending()
+    pendingCount.value = pending.length
+  } catch (e) {
+    // 忽略错误
+  }
+}
 
 function handleLogout() {
   authStore.logout()
   router.push('/login')
 }
+
+onMounted(() => {
+  loadPendingCount()
+})
 </script>

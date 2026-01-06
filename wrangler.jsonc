@@ -1,0 +1,38 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "scratch-viwe",
+  "compatibility_date": "2024-12-01",
+  "compatibility_flags": ["nodejs_compat"],
+
+  // 静态资源配置 (前端)
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application"
+  },
+
+  // Workers 入口 (后端 API)
+  "main": "workers/index.js",
+
+  // D1 数据库绑定
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "scratch-viwe-db",
+      "database_id": "de3d54d2-6b7e-4c77-811a-d6131ad5ce71"
+    }
+  ],
+
+  // R2 存储绑定 (文件上传)
+  "r2_buckets": [
+    {
+      "binding": "BUCKET",
+      "bucket_name": "scratch-viwe-uploads"
+    }
+  ],
+
+  // 环境变量
+  "vars": {
+    "JWT_SECRET": "your-jwt-secret-change-in-production"
+  }
+}

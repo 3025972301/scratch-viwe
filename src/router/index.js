@@ -36,17 +36,34 @@ router.beforeEach(async (to, from, next) => {
         path: '/login',
         query: { redirect: to.fullPath }
       })
+    } else if (!authStore.isAdmin) {
+      // 非管理员，重定向到学生中心
+      next('/my')
+    } else {
+      next()
+    }
+  } else if (to.path.startsWith('/my')) {
+    // 学生中心需要登录
+    const { useAuthStore } = await import('@/stores/auth')
+    const authStore = useAuthStore()
+    await authStore.init()
+
+    if (!authStore.isAuthenticated) {
+      next({
+        path: '/login',
+        query: { redirect: to.fullPath }
+      })
     } else {
       next()
     }
   } else if (to.path === '/login') {
-    // 已登录用户访问登录页，重定向到管理后台
+    // 已登录用户访问登录页，根据角色重定向
     const { useAuthStore } = await import('@/stores/auth')
     const authStore = useAuthStore()
     await authStore.init()
 
     if (authStore.isAuthenticated) {
-      next('/admin')
+      next(authStore.isAdmin ? '/admin' : '/my')
     } else {
       next()
     }
