@@ -3,26 +3,32 @@
     <v-app-bar color="grey-darken-4" density="compact">
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
-      <v-toolbar-title>
-        <v-icon icon="mdi-cog" class="mr-2"></v-icon>
-        管理后台
+      <v-toolbar-title class="title-responsive">
+        <v-icon icon="mdi-cog" class="mr-2 d-none d-sm-flex"></v-icon>
+        <span class="title-text">管理后台</span>
       </v-toolbar-title>
 
       <v-spacer></v-spacer>
 
-      <v-chip variant="text" class="mr-2">
+      <v-chip variant="text" class="mr-2 d-none d-sm-flex">
         <v-icon start>mdi-account</v-icon>
         {{ currentUser?.username || '管理员' }}
       </v-chip>
 
-      <v-btn to="/" variant="text" size="small" class="mr-2">
+      <v-btn to="/" variant="text" size="small" class="mr-2 d-none d-sm-flex">
         <v-icon start>mdi-home</v-icon>
         返回前台
       </v-btn>
+      <v-btn to="/" variant="text" size="small" icon class="mr-1 d-sm-none">
+        <v-icon>mdi-home</v-icon>
+      </v-btn>
 
-      <v-btn variant="text" size="small" color="error" @click="handleLogout">
+      <v-btn variant="text" size="small" color="error" @click="handleLogout" class="d-none d-sm-flex">
         <v-icon start>mdi-logout</v-icon>
         退出登录
+      </v-btn>
+      <v-btn variant="text" size="small" color="error" icon @click="handleLogout" class="d-sm-none">
+        <v-icon>mdi-logout</v-icon>
       </v-btn>
     </v-app-bar>
 
@@ -155,3 +161,26 @@ onMounted(() => {
   loadPendingCount()
 })
 </script>
+
+<style scoped>
+/* 移动端标题优化 */
+.title-responsive {
+  flex-shrink: 1;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.title-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 400px) {
+  .title-text {
+    font-size: 14px !important;
+  }
+}
+</style>

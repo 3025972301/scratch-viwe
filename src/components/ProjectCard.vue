@@ -1,5 +1,6 @@
 <template>
   <v-card
+    ref="cardRef"
     class="project-card"
     :to="`/project/${project.id}`"
     hover
@@ -59,7 +60,13 @@
         {{ project.likes || 0 }}
       </v-chip>
       <v-spacer></v-spacer>
-      <v-btn size="small" color="primary" variant="text">
+      <v-btn
+        size="small"
+        color="primary"
+        variant="text"
+        :loading="navigating"
+        @click.prevent="navigateToProject"
+      >
         查看详情
         <v-icon end size="small">mdi-arrow-right</v-icon>
       </v-btn>
@@ -68,7 +75,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/app'
 import { getFileUrl } from '@/utils/api'
 import { generateThumbnail } from '@/utils/thumbnail'
@@ -80,9 +88,14 @@ const props = defineProps({
   }
 })
 
+const router = useRouter()
 const store = useAppStore()
 const generatedThumbnail = ref(null)
 const loadingThumbnail = ref(false)
+const navigating = ref(false)
+const cardRef = ref(null)
+const isVisible = ref(false)
+let observer = null
 
 const defaultThumbnail = 'data:image/svg+xml,' + encodeURIComponent(`
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360">
@@ -113,7 +126,52 @@ const studentName = computed(() => {
   return student ? student.name : '未知学生'
 })
 
-// 自动生成缩略图
+// 点击按钮导航到项目详情页
+async function navigateToProject() {
+  navigating.value = true
+  try {
+    await router.push(`/project/${props.project.id}`)
+  } catch (e) {
+    console.error('Navigation error:', e)
+  } finally {
+    // 延迟重置状态，避免闪烁
+    setTimeout(() => {
+      navigating.value = false
+    }, 300)
+  }
+}
+
+// 懒加载：使用 Intersection Observer 检测卡片是否进入视口
+function setupIntersectionObserver() {
+  // 获取实际的 DOM 元素（Vuetify 组件的 $el）
+  const element = cardRef.value?.$el || cardRef.value
+  if (!element || typeof IntersectionObserver === 'undefined') {
+    // 不支持 Intersection Observer 时直接加载
+    loadThumbnail()
+    return
+  }
+
+  observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && !isVisible.value) {
+          isVisible.value = true
+          loadThumbnail()
+          // 加载后取消观察
+          observer?.disconnect()
+        }
+      })
+    },
+    {
+      rootMargin: '100px', // 提前100px开始加载
+      threshold: 0.1
+    }
+  )
+
+  observer.observe(element)
+}
+
+// 自动生成缩略图（带并发限制）
 async function loadThumbnail() {
   // 如果已有缩略图或没有 sb3 文件，跳过
   if (props.project.thumbnail || !props.project.sb3File) {
@@ -135,7 +193,14 @@ async function loadThumbnail() {
 }
 
 onMounted(() => {
-  loadThumbnail()
+  // 使用 nextTick 确保 DOM 已渲染
+  setTimeout(() => {
+    setupIntersectionObserver()
+  }, 0)
+})
+
+onUnmounted(() => {
+  observer?.disconnect()
 })
 </script>
 

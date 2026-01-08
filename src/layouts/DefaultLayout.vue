@@ -3,10 +3,10 @@
     <v-app-bar color="primary" prominent>
       <v-app-bar-nav-icon @click="drawer = !drawer" class="d-md-none"></v-app-bar-nav-icon>
 
-      <v-toolbar-title class="text-h5 font-weight-bold">
+      <v-toolbar-title class="text-h5 font-weight-bold title-responsive">
         <router-link to="/" class="text-white text-decoration-none d-flex align-center">
-          <v-icon icon="mdi-cat" class="mr-2" size="32"></v-icon>
-          Scratch 作品展
+          <v-icon icon="mdi-cat" class="mr-2 d-none d-sm-flex" size="32"></v-icon>
+          <span class="title-text">Scratch 作品展</span>
         </router-link>
       </v-toolbar-title>
 
@@ -63,3 +63,31 @@ import { ref } from 'vue'
 
 const drawer = ref(false)
 </script>
+
+<style scoped>
+/* 移动端标题优化 */
+.title-responsive {
+  flex-shrink: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.title-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 小屏幕设备优化 */
+@media (max-width: 400px) {
+  .title-text {
+    font-size: 16px !important;
+  }
+}
+
+@media (max-width: 320px) {
+  .title-text {
+    font-size: 14px !important;
+  }
+}
+</style>
