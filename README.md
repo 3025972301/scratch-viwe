@@ -44,9 +44,7 @@ npm run cf:d1:init:local
 
 ## 一键部署到 Cloudflare
 
-[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/YOUR_USERNAME/scratch-viwe)
-
-> 请将上述链接中的 `YOUR_USERNAME` 替换为你的 GitHub 用户名
+[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/3025972301/scratch-viwe)
 
 ### 手动部署步骤
 
